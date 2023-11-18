@@ -3,41 +3,41 @@ A Discord bot to help assist with common CTF tasks.
 
 ## Features
 * Ciphers
-** Caesar Bruteforce
-** ATBASH
-** ROT47, ROT8000, ROT80000
+    * Caesar Bruteforce
+    * ATBASH
+*    ROT47, ROT8000, ROT80000
 * Encodings
-** Binary
-** Octal
-** Decimal
-** Hexadecimal
-** Base32, Base58, Base64, Base85, Base91
-** Morse Code
-** URL Encoding
-** ASCII Table & Lookup
+    * Binary
+    * Octal
+    * Decimal
+    * Hexadecimal
+    * Base32, Base58, Base64, Base85, Base91
+    * Morse Code
+    * URL Encoding
+    * ASCII Table & Lookup
 * Hashes
-** MD5
-** SHA1
-** SHA256
-** SHA512
+    * MD5
+    * SHA1
+    * SHA256
+    * SHA512
 * Images
-** OCR
+    * OCR
 * Files
-** Strings
-** Hexdump
-** Metadata (EXIF)
-** .pyc Decompiler
+    * Strings
+    * Hexdump
+    * Metadata (EXIF)
+    * .pyc Decompiler
 * Strings
-** Count character occurrences
-** Count number of words
-** Count number of characters
-** Replace characters
+    * Count character occurrences
+    * Count number of words
+    * Count number of characters
+    * Replace characters
 * Magic - Automatically try different ciphers & encodings
 * Slash Command Support
 
 ## Usage
 ### Setting up the repository
-```
+```bash
 git clone
 cd ctfer
 python3 -m venv venv
@@ -46,7 +46,7 @@ pip install -r requirements.txt
 ```
 
 ### Configuring the bot
-```
+```bash
 cp .env.sample .env
 nano .env
 ```
@@ -60,7 +60,7 @@ Make sure you have the binaries in your PATH
 | [Decompyle++](https://github.com/zrax/pycdc) | .pyc Decompiler |
 
 ## Running the bot
-```
+```bash
 python3 main.py
 ```
 
