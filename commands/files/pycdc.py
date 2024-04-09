@@ -27,11 +27,11 @@ class PycdcCommand(commands.Cog):
         file_data = await file.read()
         pycdc_output = _pycdc(file_data)
         if len(pycdc_output) > 2000:
-            filename = generate_filename("py")
+            filename = helper.generate_filename("py")
             with open(filename, "w") as f:
                 f.write(pycdc_output)
             await ctx.send(file=discord.File(filename))
-            cleanup(filename)
+            helper.cleanup(filename)
             return await ctx.respond("Too large to send text, sent as file.")
         return await ctx.respond(f"```py\n{pycdc_output}```")
         

@@ -41,11 +41,11 @@ class ExifCommand(commands.Cog):
         file_data = await file.read()
         exif_output = _exif(file_data, grep)
         if len(exif_output) > 2000:
-            filename = generate_filename()
+            filename = helper.generate_filename()
             with open(filename, "w") as f:
                 f.write(exif_output)
             await ctx.send(file=discord.File(filename))
-            cleanup(filename)
+            helper.cleanup(filename)
             return await ctx.respond("Too large to send text, sent as file.")
         return await ctx.respond(f"```{exif_output}```")
 

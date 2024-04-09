@@ -14,6 +14,10 @@ from commands.encodings.hexadecimal import _hex_decode
 from commands.encodings.octal import _octal_decode
 from commands.encodings.url import _url_decode
 
+import subprocess
+import pexpect
+import re
+
 
 # async def crackme(ctx: discord.ApplicationContext, message):
 #     formula = {}
@@ -67,8 +71,6 @@ def _solve(message: str):
     formula["Decimal"] = _decimal_decode(message)
     formula["Hexadecimal"] = _hex_decode(message)
     formula["URL"] = _url_decode(message)
-    
-    
     candidates = []
     for encoded, decoded in formula.items():
         print(encoded, decoded)
@@ -80,7 +82,6 @@ def _solve(message: str):
     if len(candidates) == 0:
         return "No results :("
     return "\n".join(candidates)
-    
 
 class MagicCommand(commands.Cog):
     def __init__(self, bot):
@@ -90,6 +91,56 @@ class MagicCommand(commands.Cog):
     @option("message", description="Try to automatically decode a message.")
     async def magic(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"```{_solve(message)}```")
+
+    @commands.slash_command()
+    @option("message", description="Try to automatically decode a message.")
+    async def ciphey(self, ctx: ApplicationContext, message):
+
+        Y_EMOJI = '✅'
+        N_EMOJI = '❌'
+
+        cmd = f"ciphey -t '{message}'"
+        ciphey = pexpect.spawn(cmd, encoding='utf-8', timeout=60)
+        first = True
+        message = None
+
+        while (True):
+            try:
+                ciphey.expect('m: ')
+            except:
+                return await ctx.respond("Ciphey failed to crack.")
+            output = re.sub('\[[0-9;]+[a-zA-Z]',' ', ciphey.before)
+            output = output.split('Possible')[1]
+
+            if (first):
+                message = await ctx.respond(f"```{output}```")
+                message = await message.original_response()
+                await message.add_reaction(Y_EMOJI)
+                await message.add_reaction(N_EMOJI)
+            else:
+                await message.edit(content=f"```{output}```")
+                await message.remove_reaction(N_EMOJI, ctx.author)
+
+            def check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) in ['✅', '❌']
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+                if (str(reaction.emoji) == Y_EMOJI):
+                    ciphey.sendline('y')
+                    break
+                else:
+                    first = False
+                    ciphey.sendline('n')
+                    continue
+            except Exception as e:
+                print(e)
+                return await ctx.respond("Timed out.")
+
+        output = re.sub('\[[0-9;]+[a-zA-Z]',' ', ciphey.read())
+        output = output.split('╭')[1]
+        await ctx.respond(f"``` {output}```")
+        await message.clear_reactions()
+        return ciphey.close()
 
 def setup(bot):
     bot.add_cog(MagicCommand(bot))
