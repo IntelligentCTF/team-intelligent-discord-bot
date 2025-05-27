@@ -2,6 +2,7 @@ services:
   discord-bot:
     build: .
     container_name: discord-bot
+    restart: unless-stopped
     volumes:
       - .:/app
     working_dir: /app
