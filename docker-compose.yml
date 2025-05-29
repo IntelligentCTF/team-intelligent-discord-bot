@@ -5,5 +5,11 @@ services:
     restart: unless-stopped
     volumes:
       - .:/app
+      - discord-data:/app/data
     working_dir: /app
     command: python3 main.py
+
+# Volume for storing persistent data
+volumes:
+  discord-data:
+    name: discord-data

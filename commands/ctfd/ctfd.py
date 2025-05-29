@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import option, ApplicationContext, ForumTag, AllowedMentions, Embed, Color, PartialEmoji, ForumChannel
+from discord import option, ApplicationContext, ForumTag, AllowedMentions, Embed, Color, PartialEmoji, ForumChannel, Thread
 import aiohttp
 import asyncio
 
@@ -8,11 +8,12 @@ import asyncio
 TAGS = [
     ForumTag(name="Web Exploitation", emoji=PartialEmoji(name="🌐")),
     ForumTag(name="Cryptography", emoji=PartialEmoji(name="🔑")),
-    ForumTag(name="Forensics", emoji=PartialEmoji(name="🔍")),    
+    ForumTag(name="Forensics", emoji=PartialEmoji(name="💽")),    
     ForumTag(name="Reverse Engineering", emoji=PartialEmoji(name="🔄")),
-    ForumTag(name="Binary Exploitation", emoji=PartialEmoji(name="🔍")),
+    ForumTag(name="Binary Exploitation", emoji=PartialEmoji(name="📝")),
     ForumTag(name="OSINT", emoji=PartialEmoji(name="🔍")),
-    ForumTag(name="Miscellaneous", emoji=PartialEmoji(name="🔍")),
+    ForumTag(name="Miscellaneous", emoji=PartialEmoji(name="⁉️")),
+    ForumTag(name="Solved", emoji=PartialEmoji(name="✅")),
 ]
 
 # Additional semantic mappings to the above tags
@@ -31,10 +32,11 @@ CATEGORY_MAPPING = {
     "binex": "Binary Exploitation",
     "binexp": "Binary Exploitation",
     "osint": "OSINT",
-    "open source intelligence": "OSINT"
+    "open source intelligence": "OSINT",
+    "solved": "Solved"
 }
 
-def _get_category_tag(category: str, forum: ForumChannel):
+def get_category_tag(category: str, forum: ForumChannel):
     category = category.lower()
     target_name = CATEGORY_MAPPING.get(category, "Miscellaneous")
     
@@ -133,7 +135,7 @@ class CTFd(commands.Cog):
                             name=challenge['name'],
                             embed=embed,
                             reason=f"CTF Challenge: {challenge['name']}",
-                            applied_tags=[_get_category_tag(challenge['category'], forum)],
+                            applied_tags=[get_category_tag(challenge['category'], forum)],
                             allowed_mentions=AllowedMentions(
                                 everyone=True,
                                 users=True,
@@ -149,6 +151,40 @@ class CTFd(commands.Cog):
             
         except Exception as e:
             await ctx.followup.send(f"Error: {str(e)}", ephemeral=True)
+
+    @commands.slash_command()
+    async def solved(self, ctx: ApplicationContext):
+        # Check if the command is being used in a thread
+        if not isinstance(ctx.channel, Thread):
+            await ctx.respond("This command can only be used in a thread!", ephemeral=True)
+            return
+            
+        thread = ctx.channel
+        parent = thread.parent
+        
+        # Check if the parent channel is a forum and in the Competitions category
+        if not isinstance(parent, ForumChannel) or parent.category.name != "Competitions":
+            await ctx.respond("This command can only be used in competition threads!", ephemeral=True)
+            return
+            
+        # Get the solved tag
+        solved_tag = get_category_tag("solved", parent)
+        
+        # Get current tags and add solved tag if not already present
+        current_tags = list(thread.applied_tags)
+        if solved_tag not in current_tags:
+            current_tags.append(solved_tag)
+            
+        # Update thread name and tags
+        try:
+            new_name = thread.name if thread.name.startswith("solved-") else f"solved-{thread.name}"
+            await thread.edit(
+                name=new_name,
+                applied_tags=current_tags
+            )
+            await ctx.respond("Thread marked as solved! 🎉", ephemeral=True)
+        except Exception as e:
+            await ctx.respond(f"Failed to mark thread as solved: {str(e)}", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(CTFd(bot)) 

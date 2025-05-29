@@ -15,6 +15,9 @@ RUN apt-get update && \
 # Set working directory
 WORKDIR /app
 
+# Create data directory (where persistent data will be stored)
+RUN mkdir -p /app/data
+
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
