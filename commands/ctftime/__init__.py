@@ -1,2 +1,2 @@
-__all__ = ["calendar"]
+__all__ = ["calendar", "events"]
 from . import *

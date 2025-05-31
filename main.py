@@ -33,6 +33,7 @@ for py_file in glob.glob(f"./commands/*"):
             continue
         # Normalize the path for Pycord loader
         py_file = py_file.replace('.py', '').replace('\\', '/').replace('/', '.').replace('..', '')
+        if 'helpers' in py_file: continue
         print(f"Loaded " + py_file)
         bot.load_extension(py_file)
 

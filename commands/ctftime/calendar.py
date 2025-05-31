@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 import os
 from typing import List, Dict
 import re
-from bs4 import BeautifulSoup
+from . import helpers
 
 class CTFTimeCalendar(commands.Cog):
     def __init__(self, bot):
@@ -75,10 +75,6 @@ class CTFTimeCalendar(commands.Cog):
         conn.commit()
         conn.close()
         
-    def parse_ctftime_date(self, date_str: str) -> datetime:
-        """Parse CTFtime date format (YYYYMMDDTHHMMSS) to datetime"""
-        return datetime.strptime(date_str, '%Y%m%dT%H%M%S').replace(tzinfo=timezone.utc)
-        
     def is_this_week(self, start_date: datetime) -> bool:
         now = datetime.now(timezone.utc)
         monday = now - timedelta(days=now.weekday())
@@ -87,67 +83,9 @@ class CTFTimeCalendar(commands.Cog):
         sunday = sunday.replace(hour=23, minute=59, second=59, microsecond=999999)
         return monday <= start_date <= sunday
         
-    async def fetch_event_description(self, event_id: str) -> str:
-        """Fetch the event description from the CTFtime event page"""
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f'https://ctftime.org/event/{event_id}') as response:
-                    if response.status != 200:
-                        return ""
-                    
-                    content = await response.text()
-                    soup = BeautifulSoup(content, 'html.parser')
-                    
-                    # Find the description div
-                    description_div = soup.find('div', {'id': 'id_description'})
-                    if description_div:
-                        # Get all text content, preserving line breaks
-                        description = description_div.get_text(separator='\n', strip=True)
-                        # Limit description length for Discord embed
-                        if len(description) > 1000:
-                            description = description[:997] + "..."
-                        return description
-                    return ""
-        except Exception as e:
-            print(f"Error fetching event description: {str(e)}")
-            return ""
-        
-    async def fetch_ctftime_events(self) -> List[Dict]:
-        """Fetch and parse CTFtime RSS feed"""
-        async with aiohttp.ClientSession() as session:
-            async with session.get('https://ctftime.org/event/list/upcoming/rss/') as response:
-                if response.status != 200:
-                    return []
-                    
-                content = await response.text()
-                root = ET.fromstring(content)
-                
-                events = []
-                for item in root.findall('.//item'):
-                    # Extract event ID from ctftime_url using regex
-                    ctftime_url = item.find('ctftime_url').text
-                    event_id = re.search(r'/event/(\d+)', ctftime_url).group(1)
-                    
-                    event = {
-                        'id': event_id,
-                        'title': item.find('title').text,
-                        'start_date': item.find('start_date').text,
-                        'end_date': item.find('finish_date').text,
-                        'format': item.find('format_text').text,
-                        'url': item.find('url').text,
-                        'ctftime_url': ctftime_url,
-                        'weight': float(item.find('weight').text or 0),
-                        'location': item.find('location').text or '',
-                        'onsite': item.find('onsite').text.lower() == 'true',
-                        'restrictions': item.find('restrictions').text or 'Unknown'
-                    }
-                    events.append(event)
-                    
-                return events
-                
     def create_event_embed(self, event: Dict) -> discord.Embed:
-        start_date = self.parse_ctftime_date(event['start_date'])
-        end_date = self.parse_ctftime_date(event['end_date'])
+        start_date = helpers.parse_ctftime_date(event['start_date'])
+        end_date = helpers.parse_ctftime_date(event['end_date'])
         
         embed = discord.Embed(
             title=event['title'],
@@ -180,6 +118,37 @@ class CTFTimeCalendar(commands.Cog):
         
         return embed
         
+    async def fetch_ctftime_events(self) -> List[Dict]:
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://ctftime.org/event/list/upcoming/rss/') as response:
+                if response.status != 200:
+                    return []
+                    
+                content = await response.text()
+                root = ET.fromstring(content)
+                
+                events = []
+                for item in root.findall('.//item'):
+                    ctftime_url = item.find('ctftime_url').text
+                    event_id = re.search(r'/event/(\d+)', ctftime_url).group(1)
+                    
+                    event = {
+                        'id': event_id,
+                        'title': item.find('title').text,
+                        'start_date': item.find('start_date').text,
+                        'end_date': item.find('finish_date').text,
+                        'format': item.find('format_text').text,
+                        'url': item.find('url').text,
+                        'ctftime_url': ctftime_url,
+                        'weight': float(item.find('weight').text or 0),
+                        'location': item.find('location').text or '',
+                        'onsite': item.find('onsite').text.lower() == 'true',
+                        'restrictions': item.find('restrictions').text or 'Unknown'
+                    }
+                    events.append(event)
+                    
+                return events
+                
     @tasks.loop(hours=24)
     async def check_ctftime(self):
         try:
@@ -206,18 +175,20 @@ class CTFTimeCalendar(commands.Cog):
                     continue
                     
                 # Check if event is this week
-                start_date = self.parse_ctftime_date(event['start_date'])
+                start_date = helpers.parse_ctftime_date(event['start_date'])
                 if not self.is_this_week(start_date):
                     continue
                 
                 # Fetch event description
-                description = await self.fetch_event_description(event['id'])
+                description = await helpers.fetch_event_description(event['id'])
+                # Truncate for Discord embed
+                description = helpers.truncate_description(description, max_length=1000)
                 event['description'] = description
                 events_this_week.append(event)
 
             if events_this_week:
                 # Send the header message first
-                await channel.send(f"🏁 **{week_range}** 🏁")
+                await channel.send(f"🚩 **{week_range}** 🚩")
                 
                 # Then send all event embeds
                 for event in events_this_week:
