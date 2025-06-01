@@ -202,7 +202,7 @@ async def update_ctf_spreadsheet(events: List[Dict]):
                 format_sheet_date(end_time),            # End Date
                 format_sheet_time(end_time),            # End Time
                 format_duration(start_time, end_time),  # Duration
-                event['weight'],                        # Weight
+                f"{event['weight']:.2f}",              # Weight (formatted as string with 2 decimal places)
                 f"https://ctftime.org{event['ctftime_url']}",  # Link
                 # Cells for availability (20 max for now, can increase later)
                 "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
