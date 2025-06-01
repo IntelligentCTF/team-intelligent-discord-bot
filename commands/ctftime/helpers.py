@@ -149,7 +149,7 @@ async def update_ctf_spreadsheet(events: List[Dict]):
         parsed_events = []
         
         for row in data:
-            if len(row) >= 7:  # Only process valid rows
+            if len(row) >= 8:  # Only process valid rows
                 try:
                     # Store event name for duplicate checking
                     event_name = row[0].strip()
