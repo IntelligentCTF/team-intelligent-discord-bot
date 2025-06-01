@@ -230,7 +230,7 @@ async def update_ctf_spreadsheet(events: List[Dict]):
         
         # Set up dropdown validation for availability columns
         worksheet.add_validation(
-            'H2:AA1000',
+            'I2:AA1000',
             utils.ValidationConditionType.one_of_list,
             ['Yes', 'Yes?', 'No?', 'No'],
             showCustomUi=True
