@@ -196,12 +196,13 @@ async def update_ctf_spreadsheet(events: List[Dict]):
             end_time = parse_ctftime_date(event['end_date'])
             
             row = [
-                event_name,                        # Event Name
-                format_sheet_date(start_time),     # Start Date
-                format_sheet_time(start_time),     # Start Time
-                format_sheet_date(end_time),       # End Date
-                format_sheet_time(end_time),       # End Time
+                event_name,                             # Event Name
+                format_sheet_date(start_time),          # Start Date
+                format_sheet_time(start_time),          # Start Time
+                format_sheet_date(end_time),            # End Date
+                format_sheet_time(end_time),            # End Time
                 format_duration(start_time, end_time),  # Duration
+                event['weight'],                        # Weight
                 f"https://ctftime.org{event['ctftime_url']}",  # Link
                 # Cells for availability (20 max for now, can increase later)
                 "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""

@@ -121,10 +121,9 @@ class CTFEvents(commands.Cog):
                 start_time = helpers.parse_ctftime_date(event['start_date'])
                 end_time = helpers.parse_ctftime_date(event['end_date'])
                 
-                # Create event description with format and other details
+                # Create event description
                 full_description = (
                     f"🚩 {event['title']}\n\n"
-                    f"Format: {event['format']}\n"
                     f"Weight: {event['weight']:.2f}\n"
                     f"{'Location: ' + event['location'] if event['onsite'] else 'Type: Online'}\n"
                     f"Restrictions: {event['restrictions']}\n\n"
