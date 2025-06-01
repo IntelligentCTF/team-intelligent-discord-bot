@@ -141,7 +141,7 @@ async def update_ctf_spreadsheet(events: List[Dict]):
         worksheet = sh.worksheet(str(current_year)) # e.g. "2025"
         
         # Get raw cell values (not formatted display values)
-        data = worksheet.get('A2:G', value_render_option='UNFORMATTED_VALUE')
+        data = worksheet.get('A2:H', value_render_option='UNFORMATTED_VALUE')
         print(f"[GSheet] Found {len(data)} existing events in the {current_year} sheet")
         
         # Process existing events to get their timestamps and names
