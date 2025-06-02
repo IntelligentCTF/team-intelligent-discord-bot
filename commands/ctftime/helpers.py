@@ -179,13 +179,6 @@ async def update_ctf_spreadsheet(events: List[Dict]):
         # Process new events
         new_events = []
         for event in events:
-            start_time = parse_ctftime_date(event['start_date'])
-            
-            # Skip if event is in next year
-            if start_time.year > current_year:
-                print(f"[GSheet] Skipping event {event['title']} - it's for {start_time.year}")
-                continue
-                
             event_name = event['title'].strip()
             
             # Skip if name already exists
@@ -193,6 +186,7 @@ async def update_ctf_spreadsheet(events: List[Dict]):
                 print(f"[GSheet] Skipping duplicate event: {event_name}")
                 continue
                 
+            start_time = parse_ctftime_date(event['start_date'])
             end_time = parse_ctftime_date(event['end_date'])
             
             row = [

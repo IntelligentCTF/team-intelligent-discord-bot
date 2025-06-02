@@ -93,6 +93,12 @@ class CTFEvents(commands.Cog):
                         'onsite': item.find('onsite').text.lower() == 'true',
                         'restrictions': item.find('restrictions').text or 'Unknown'
                     }
+                    
+                    # Make sure event is this year, if not, skip
+                    if helpers.parse_ctftime_date(event['start_date']).year != datetime.now().year:
+                        print(f"[CTFTime] Skipping event {event['title']} - it's for {helpers.parse_ctftime_date(event['start_date']).year}")
+                        continue
+                    
                     events.append(event)
                     
                 return events
@@ -114,7 +120,6 @@ class CTFEvents(commands.Cog):
                 
                 # Get full description
                 description = await helpers.fetch_event_description(event['id'])
-                # Truncate for Discord event limit
                 description = helpers.truncate_description(description, max_length=800)
                 
                 # Parse dates
