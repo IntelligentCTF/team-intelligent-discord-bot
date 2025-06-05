@@ -119,19 +119,27 @@ class CTFTimeCalendar(commands.Cog):
         return embed
         
     async def fetch_ctftime_events(self) -> List[Dict]:
+        """Fetch and parse CTFtime RSS feed"""
         async with aiohttp.ClientSession() as session:
             async with session.get('https://ctftime.org/event/list/upcoming/rss/') as response:
                 if response.status != 200:
                     return []
-                    
+    
                 content = await response.text()
                 root = ET.fromstring(content)
-                
+    
                 events = []
                 for item in root.findall('.//item'):
                     ctftime_url = item.find('ctftime_url').text
                     event_id = re.search(r'/event/(\d+)', ctftime_url).group(1)
-                    
+    
+                    onsite = item.find('onsite').text.lower() == 'true'
+                    restrictions = item.find('restrictions').text or 'Unknown'
+    
+                    # Filter: skip if onsite or not open
+                    if onsite or restrictions.lower() != 'open':
+                        continue
+    
                     event = {
                         'id': event_id,
                         'title': item.find('title').text,
@@ -142,11 +150,17 @@ class CTFTimeCalendar(commands.Cog):
                         'ctftime_url': ctftime_url,
                         'weight': float(item.find('weight').text or 0),
                         'location': item.find('location').text or '',
-                        'onsite': item.find('onsite').text.lower() == 'true',
-                        'restrictions': item.find('restrictions').text or 'Unknown'
+                        'onsite': onsite,
+                        'restrictions': restrictions
                     }
+    
+                    # Make sure event is this year, if not, skip
+                    if helpers.parse_ctftime_date(event['start_date']).year != datetime.now().year:
+                        print(f"[CTFTime] Skipping event {event['title']} - it's for {helpers.parse_ctftime_date(event['start_date']).year}")
+                        continue
+    
                     events.append(event)
-                    
+    
                 return events
                 
     @tasks.loop(hours=24)
