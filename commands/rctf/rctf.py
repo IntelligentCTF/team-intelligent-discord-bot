@@ -48,7 +48,7 @@ def get_category_tag(category: str, forum: ForumChannel):
     print(f"Miscellaneous: {category}")
     return next(tag for tag in forum.available_tags if tag.name == "Miscellaneous")
 
-class CTFd(commands.Cog):
+class rCTF(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -171,4 +171,4 @@ class CTFd(commands.Cog):
             await ctx.respond(f"Failed to mark thread as solved: {str(e)}", ephemeral=True)
 
 def setup(bot):
-    bot.add_cog(CTFd(bot)) 
+    bot.add_cog(rCTF(bot)) 
