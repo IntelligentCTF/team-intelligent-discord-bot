@@ -3,6 +3,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 import gspread
 from gspread import utils
+from google.oauth2.service_account import Credentials
 import os
 from typing import Dict, List
 import pytz
@@ -38,27 +39,12 @@ def truncate_description(description: str, max_length: int = 1000, suffix: str =
     return description
 
 def get_gspread_client() -> gspread.Client:
-    """Get Google Sheets client from environment credentials"""
-    project_id = os.getenv('GOOGLE_PROJECT_ID')
-    private_key = os.getenv('GOOGLE_PRIVATE_KEY')
-    private_key_id = os.getenv('GOOGLE_PRIVATE_KEY_ID')
-    client_email = os.getenv('GOOGLE_CLIENT_EMAIL')
-    client_id = os.getenv('GOOGLE_CLIENT_ID')
+    """Get Google Sheets client from credentials.json"""
     
-    if not (project_id or private_key or private_key_id or client_email or client_id):
-        raise ValueError("Missing Google Sheets credentials")
-    
-    credentials = {
-        "type": "service_account",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "project_id": project_id,
-        "private_key_id": private_key_id,
-        "private_key": private_key,
-        "client_email": client_email,
-        "client_id": client_id
-    }
-        
-    return gspread.service_account_from_dict(credentials)
+    scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+    credentials = Credentials.from_service_account_file('credentials.json', scopes=scopes)
+    gc = gspread.authorize(credentials)
+    return gc
 
 def convert_to_est(dt: datetime) -> datetime:
     """Convert UTC datetime to EST"""
@@ -83,9 +69,9 @@ def format_duration(start: datetime, end: datetime) -> str:
     minutes = (duration.seconds % 3600) // 60
     
     if days > 0:
-        return f"{days} days {hours:02d}:{minutes:02d}"
+        return f"{days} days {hours:02d}:{minutes:02d} hours"
     else:
-        return f"0 days {hours:02d}:{minutes:02d}"
+        return f"0 days {hours:02d}:{minutes:02d} hours"
 
 def excel_date_to_datetime(excel_date: float, excel_time: float = 0) -> datetime:
     """Convert Excel serial date/time to datetime"""

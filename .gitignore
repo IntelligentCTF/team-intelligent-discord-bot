@@ -3,3 +3,4 @@
 .env
 ctftime.db
 events.db
+credentials.json
