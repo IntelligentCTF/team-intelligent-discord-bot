@@ -54,19 +54,19 @@ class CTFd(commands.Cog):
     
     @commands.slash_command()
     @option("name", description="Name of the CTF competition")
-    @option("ctfd_url", description="URL of the CTFd instance (e.g., https://demo.ctfd.io)")
-    @option("token", description="Your CTFd API token")
-    async def ctf(self, ctx: ApplicationContext, name: str, ctfd_url: str, token: str):
+    @option("rctf_url", description="URL of the rCTF instance with team token (e.g., https://rctf.io/)")
+    @option("token", description="Bearer token for the rCTF instance")
+    async def rctf(self, ctx: ApplicationContext, name: str, rctf_url: str, token: str):
         
         # Defer the response since this might take a while
         await ctx.defer(ephemeral=True)
         
         # Remove trailing slash from URL if present
-        ctfd_url = ctfd_url.rstrip('/')
+        rctf_url = rctf_url.rstrip('/')
         
         # Headers for API requests
         headers = {
-            'Authorization': f'Token {token}',
+            'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json'
         }
         
@@ -88,16 +88,17 @@ class CTFd(commands.Cog):
             
             # Fetch challenges from CTFd
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"{ctfd_url}/api/v1/challenges", headers=headers) as response:
+                async with session.get(f"{rctf_url}/api/v1/challs", headers=headers) as response:
                     if response.status != 200:
                         await ctx.followup.send(f"Error: Failed to fetch challenges. Status code: {response.status}", ephemeral=True)
                         return
                         
                     data = await response.json()
-                    if not data.get('success'):
-                        await ctx.followup.send("Error: Failed to fetch challenges from CTFd", ephemeral=True)
+                    if not data.get('kind') == 'goodChallenges':
+                        await ctx.followup.send("Error: Failed to fetch challenges from rCTF", ephemeral=True)
                         return
                         
+                    # "data":[{"files":[],"description":"I made this site where you can upload profile pictures, if you happen to embed caption metadata within your image, I'll try displaying it on your profile page.\n\n[Instancer](https://instancer.tjctf.org/challenge/hidden-canvas)","author":"ansh","points":482,"id":"hidden-canvas","name":"hidden-canvas","category":"web","sortWeight":0,"solves":7}]
                     challenges = data.get('data', [])                    
                     
                     # Create a thread for each challenge
@@ -105,31 +106,14 @@ class CTFd(commands.Cog):
                                                 
                         embed = Embed(
                             title=challenge['name'],
-                            url=f"{ctfd_url}/challenges#{challenge['id']}",
+                            url=f"{rctf_url}/challenges#{challenge['id']}",
                             color=Color.blue()
                         )
                         
                         # Add challenge details
                         embed.add_field(name="Category", value=get_category_tag(challenge['category'], forum), inline=True)
-                        embed.add_field(name="Points", value=str(challenge['value']), inline=True)                        
-                        
-                        # Add tags if available
-                        async with session.get(f"{ctfd_url}/api/v1/challenges/{challenge['id']}/tags", headers=headers) as tags_response:
-                            if tags_response.status == 200:
-                                tags_data = await tags_response.json()
-                                if tags_data.get('success'):
-                                    tags = tags_data.get('data', [])
-                                    if tags:
-                                        tag_names = [tag['value'] for tag in tags]
-                                        embed.add_field(name="Tags", value=", ".join(tag_names), inline=False)
-                        
-                        # Get challenge description
-                        async with session.get(f"{ctfd_url}/api/v1/challenges/{challenge['id']}", headers=headers) as challenge_response:
-                            if challenge_response.status == 200:
-                                challenge_data = await challenge_response.json()
-                                if challenge_data.get('success'):
-                                    description = challenge_data.get('data', {}).get('description', '')
-                                    embed.description = description
+                        embed.add_field(name="Points", value=str(challenge['points']), inline=True)     
+                        embed.description = challenge['description']
                                                      
                         thread = await forum.create_thread(
                             name=challenge['name'],
@@ -184,7 +168,7 @@ class CTFd(commands.Cog):
             )
             await ctx.respond("Thread marked as solved! 🎉")
         except Exception as e:
-            await ctx.respond(f"Failed to mark thread as solved: {str(e)}")
+            await ctx.respond(f"Failed to mark thread as solved: {str(e)}", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(CTFd(bot)) 
