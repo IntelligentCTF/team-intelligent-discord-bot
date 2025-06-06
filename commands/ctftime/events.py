@@ -117,7 +117,7 @@ class CTFEvents(commands.Cog):
             events = await self.fetch_ctftime_events()
             
             # Update Google Sheets first
-            await helpers.update_ctf_spreadsheet(events)
+            # await helpers.update_ctf_spreadsheet(events)
             
             for event in events:
                 # Skip if already created
