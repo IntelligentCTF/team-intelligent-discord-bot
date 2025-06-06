@@ -19,7 +19,7 @@ class OctalCommand(commands.Cog):
         self.bot = bot
     
     # Octal (base8)
-    @commands.slash_command()
+    @commands.slash_command(name="octal", description="Encode or decode a message in octal.")
     @option("message", description="Message to be encoded or decoded in octal.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def octal(self, ctx: ApplicationContext, message, method):

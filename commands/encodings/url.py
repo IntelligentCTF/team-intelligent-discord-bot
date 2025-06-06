@@ -32,7 +32,7 @@ class URLCommand(commands.Cog):
         self.bot = bot
 
     # URL
-    @commands.slash_command()
+    @commands.slash_command(name="url", description="Encode or decode a message in URL encoding.")
     @option("message", description="Message to be URL encoded or decoded.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def url(self, ctx: ApplicationContext, message, method):

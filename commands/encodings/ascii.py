@@ -26,14 +26,14 @@ class AsciiCommands(commands.Cog):
         self.bot = bot
 
     # ASCII lookup
-    @commands.slash_command()
+    @commands.slash_command(name="ascii", description="Lookup a character on the ASCII table.")
     @option("char", description="Character to lookup on the ASCII table.")
     async def ascii_lookup(self, ctx: ApplicationContext, char: str):
         ascii_output = _lookup_ascii(char)
         return await ctx.respond(f"```{ascii_output}```")
 
     # ASCII table
-    @commands.slash_command()
+    @commands.slash_command(name="ascii_table", description="Print the ASCII table.")
     async def ascii_table(self, ctx: ApplicationContext):
         ascii_output = _print_ascii_table()
         return await ctx.respond(f"```{ascii_output}```")

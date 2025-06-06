@@ -14,7 +14,7 @@ class MD5Command(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.slash_command()
+    @commands.slash_command(name="md5", description="Hash a message in MD5.")
     @option("message", description="Message to be hashed in MD5.")
     async def md5(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"`{_md5(message)}`")

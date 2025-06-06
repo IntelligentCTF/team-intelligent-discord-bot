@@ -19,7 +19,7 @@ class DecimalCommand(commands.Cog):
         self.bot = bot
     
     # Decimal (base10)
-    @commands.slash_command()
+    @commands.slash_command(name="decimal", description="Encode or decode a message in decimal.")
     @option("message", description="Message to be encoded or decoded in decimal.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def decimal(self, ctx: ApplicationContext, message, method):

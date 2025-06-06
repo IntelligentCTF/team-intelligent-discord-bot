@@ -22,7 +22,7 @@ class HexadecimalCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command()
+    @commands.slash_command(name="hex", description="Encode or decode a message in hexadecimal.")
     @option("message", description="Message to be encoded or decoded in hexadecimal.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def hex(self, ctx: ApplicationContext, message, method):

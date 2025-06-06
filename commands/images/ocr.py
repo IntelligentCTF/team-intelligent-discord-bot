@@ -17,7 +17,7 @@ class OCRCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command()
+    @commands.slash_command(name="ocr", description="Perform OCR on an image.")
     @option("image", description="Image to perform OCR on.")
     async def ocr(self, ctx: ApplicationContext, image: discord.Attachment):
         image_data = await image.read()

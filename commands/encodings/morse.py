@@ -61,7 +61,7 @@ class MorseCommand(commands.Cog):
         self.bot = bot
 
     # Morse
-    @commands.slash_command()
+    @commands.slash_command(name="morse", description="Encode or decode a message in Morse code.")
     @option("message", description="Message to be encoded or decoded in Morse code.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def morse(self, ctx: ApplicationContext, message, method):

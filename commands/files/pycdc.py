@@ -21,7 +21,7 @@ class PycdcCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.slash_command()
+    @commands.slash_command(name="pycdc", description="Decompile a Python pyc file.")
     @option("file", description="Python pyc to decompile.")
     async def pycdc(self, ctx: ApplicationContext, file: discord.Attachment):
         file_data = await file.read()

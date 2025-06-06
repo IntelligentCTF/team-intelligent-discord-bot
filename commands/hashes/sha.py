@@ -38,27 +38,27 @@ class SHACommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.slash_command()
+    @commands.slash_command(name="sha1", description="Hash a message in SHA1.")
     @option("message", description="Message to be hashed in SHA1.")
     async def sha1(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"`{_sha1(message)}`")
 
-    @commands.slash_command()
+    @commands.slash_command(name="sha224", description="Hash a message in SHA224.")
     @option("message", description="Message to be hashed in SHA224.")
     async def sha224(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"`{_sha224(message)}`")
     
-    @commands.slash_command()
+    @commands.slash_command(name="sha256", description="Hash a message in SHA256.")
     @option("message", description="Message to be hashed in SHA256.")
     async def sha256(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"`{_sha256(message)}`")
     
-    @commands.slash_command()
+    @commands.slash_command(name="sha384", description="Hash a message in SHA384.")
     @option("message", description="Message to be hashed in SHA384.")
     async def sha384(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"`{_sha384(message)}`")
     
-    @commands.slash_command()
+    @commands.slash_command(name="sha512", description="Hash a message in SHA512.")
     @option("message", description="Message to be hashed in SHA512.")
     async def sha512(self, ctx: ApplicationContext, message):
         return await ctx.respond(f"`{_sha512(message)}`")

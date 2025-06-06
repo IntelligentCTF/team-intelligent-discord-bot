@@ -34,7 +34,7 @@ class ExifCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command()
+    @commands.slash_command(name="exif", description="Perform exiftool on a file.")
     @option("file", description="File to perform exiftool on.")
     @option("grep", description="Filter strings output (optional)", required=False)
     async def exif(self, ctx: ApplicationContext, file: discord.Attachment, grep: str = None):

@@ -22,7 +22,7 @@ class BinaryCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command()
+    @commands.slash_command(name="binary", description="Encode or decode a message in binary.")
     @option("message", description="Message to be encoded or decoded in binary.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def binary(self, ctx: ApplicationContext, message, method):

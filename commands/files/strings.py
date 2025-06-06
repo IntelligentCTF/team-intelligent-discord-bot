@@ -35,7 +35,7 @@ class StringsCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command()
+    @commands.slash_command(name="strings", description="Perform strings on a file.")
     @option("file", description="File to perform strings on.")
     @option("grep", description="Filter strings output (optional)", required=False)
     async def strings(self, ctx: ApplicationContext, file: discord.Attachment, grep: str = None):

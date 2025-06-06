@@ -11,7 +11,7 @@ class HexdumpCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command()
+    @commands.slash_command(name="hexdump", description="Hexdump a file.")
     @option("file", description="File to hexdump.")
     async def hexdump(self, ctx: ApplicationContext, file: discord.Attachment):
         file_data = await file.read()

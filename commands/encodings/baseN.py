@@ -138,7 +138,7 @@ class BaseNCommands(commands.Cog):
         self.bot = bot
     
     # Base32
-    @commands.slash_command()
+    @commands.slash_command(name="base32", description="Encode or decode a message in Base32.")
     @option("message", description="Message to be encoded or decoded in Base32.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def base32(self, ctx: ApplicationContext, message, method):
@@ -147,7 +147,7 @@ class BaseNCommands(commands.Cog):
         return await ctx.respond(f"`{_base32_decode(message)}`")
 
     # Base58
-    @commands.slash_command()
+    @commands.slash_command(name="base58", description="Encode or decode a message in Base58.")
     @option("message", description="Message to be encoded or decoded in Base58.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def base58(self, ctx: ApplicationContext, message, method):
@@ -156,7 +156,7 @@ class BaseNCommands(commands.Cog):
         return await ctx.respond(f"`{_base58_decode(message)}`")
     
     # Base64
-    @commands.slash_command()
+    @commands.slash_command(name="base64", description="Encode or decode a message in Base64.")
     @option("message", description="Message to be encoded or decoded in Base64.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def base64(self, ctx: ApplicationContext, message, method):
@@ -165,7 +165,7 @@ class BaseNCommands(commands.Cog):
         return await ctx.respond(f"`{_base64_decode(message)}`")
     
     # Base85
-    @commands.slash_command()
+    @commands.slash_command(name="base85", description="Encode or decode a message in Base85.")
     @option("message", description="Message to be encoded or decoded in Base85.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def base85(self, ctx: ApplicationContext, message, method):
@@ -174,7 +174,7 @@ class BaseNCommands(commands.Cog):
         return await ctx.respond(f"`{_base85_decode(message)}`")
         
     # Base91
-    @commands.slash_command()
+    @commands.slash_command(name="base91", description="Encode or decode a message in Base91.")
     @option("message", description="Message to be encoded or decoded in Base91.")
     @option("method", description="Encode or decode", choices=["encode", "decode"])
     async def base91(self, ctx: ApplicationContext, message, method):

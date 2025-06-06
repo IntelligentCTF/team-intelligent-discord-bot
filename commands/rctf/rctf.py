@@ -52,7 +52,7 @@ class rCTF(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.slash_command()
+    @commands.slash_command(name="rctf", description="Create a thread for a rCTF competition")
     @option("name", description="Name of the CTF competition")
     @option("rctf_url", description="URL of the rCTF instance with team token (e.g., https://rctf.io/)")
     @option("token", description="Bearer token for the rCTF instance")
@@ -86,7 +86,7 @@ class rCTF(commands.Cog):
             # Create tags for the forum channel 
             forum = await forum.edit(available_tags=TAGS)
             
-            # Fetch challenges from CTFd
+            # Fetch challenges from rCTF
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"{rctf_url}/api/v1/challs", headers=headers) as response:
                     if response.status != 200:

@@ -52,7 +52,7 @@ class CTFd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.slash_command()
+    @commands.slash_command(name="ctfd", description="Create a thread for a CTF competition")
     @option("name", description="Name of the CTF competition")
     @option("ctfd_url", description="URL of the CTFd instance (e.g., https://demo.ctfd.io)")
     @option("token", description="Your CTFd API token")
