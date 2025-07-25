@@ -25,6 +25,7 @@ CATEGORY_MAPPING = {
     "forensics": "Forensics",
     "reverse engineering": "Reverse Engineering",
     "re": "Reverse Engineering",
+    "rev": "Reverse Engineering",
     "binary exploitation": "Binary Exploitation",
     "pwn": "Binary Exploitation",
     "binex": "Binary Exploitation",
